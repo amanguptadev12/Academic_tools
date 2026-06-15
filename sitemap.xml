@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -6,4 +7,14 @@
 <priority>1.0</priority>
 </url>
 
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+
+<url>
+<loc>https://yourdomain.com/</loc>
+<priority>1.0</priority>
+</url>
+
+>>>>>>> a0d8a0d7c244a97b44e0aadaa7bb60228f2b9b3a
 </urlset>
