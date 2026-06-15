@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<head>
+
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-B19HF9ZG7N"></script>
 <script>
@@ -20,8 +20,7 @@
     })(window, document, "clarity", "script", "x7idzga33q");
 </script>
 
-<meta name="google-site-verification" content="..." />
-<meta charset="UTF-8" />
+
 
 <meta name="google-site-verification" content="iB9hvKW6Wwg3NRxRbMkU11VsagZpuVzZgv745JzZFaQ" />
 <meta charset="UTF-8"/>
@@ -53,20 +52,21 @@ content="Free CGPA Calculator, SGPA Calculator, Attendance Calculator, Bunk Calc
 
 <!-- Open Graph / Facebook / WhatsApp Presentation -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://aktuhub.com/" /> <!-- Replace with your domain -->
+<meta property="og:url" content="https://aktuverse.vercel.app/" /> 
 <meta property="og:title" content="Academic Tools | University GPA & Attendance Suite" />
 <meta property="og:description" content="The ultimate zero-bloat toolkit for college students. Calculate weighted CGPA, track attendance metrics, and plan your semester bunks accurately." />
-<meta property="og:image" content="https://aktuhub.com/og-preview.png" />
+<meta property="twitter:image" content="https://aktuverse.vercel.app/og-preview.png" />
 
 <!-- Twitter Card Presentation -->
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content="https://aktuhub.com/" />
+<meta property="twitter:url" content="https://aktuverse.vercel.app/" />
 <meta property="twitter:title" content="Academic Tools | University GPA & Attendance Suite" />
 <meta property="twitter:description" content="The ultimate zero-bloat toolkit for college students. Calculate weighted CGPA, track attendance metrics, and plan your semester bunks accurately." />
 <meta property="twitter:image" content="https://aktuhub.com/assets/og-preview.png" />
 
 <!-- Canonical Link Element -->
-<link rel="canonical" href="https://aktuhub.com/" />
+<link rel="canonical"
+href="https://aktuverse.vercel.app/" />
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -347,6 +347,7 @@ input.inp::placeholder{color:rgba(28,61,43,.25);font-weight:400}
   letter-spacing:-.04em;
   color:var(--green);
   line-height:1;
+  word-break:break-all;
 }
 .result-sub{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5}
 .result-msg{font-size:15px;font-weight:600;color:var(--green);margin-top:6px;letter-spacing:-.01em}
@@ -418,7 +419,7 @@ input.inp::placeholder{color:rgba(28,61,43,.25);font-weight:400}
  "@context":"https://schema.org",
  "@type":"WebSite",
  "name":"Academic Tools",
- "url":"https://yourdomain.com",
+ "url":"https://aktuverse.vercel.app",
  "description":"CGPA Calculator, SGPA Calculator, Attendance Calculator, Bunk Calculator and Percentage Calculator for students."
 }
 </script>
@@ -777,7 +778,13 @@ function showPage(id,pushState=true){
   if(id==='percentage'&&!document.getElementById('pct-sems').children.length) initPct();
   if(pushState) history.pushState({page:id},'','#'+id);
 }
-history.replaceState({page:'home'},'','#home');
+function initFromHash(){
+  const hash=location.hash.replace('#','')||'home';
+  const validPages=['home','attendance','cgpa','cgpa_cb','bunk','percentage'];
+  showPage(validPages.includes(hash)?hash:'home',false);
+}
+history.replaceState({page:location.hash.replace('#','')||'home'},'',location.hash||'#home');
+initFromHash();
 window.addEventListener('popstate',e=>{
   const id=(e.state&&e.state.page)||'home';
   showPage(id,false);
@@ -917,48 +924,50 @@ function calcBunk(){
 }
 
 // ── CGPA (simple) ─────────────────────────────────
-let cgpaSems=4;
+let cgpaUID=0;
 function initCgpa(){
   document.getElementById('cgpa-sems').innerHTML='';
-  cgpaSems=4;
-  for(let i=1;i<=4;i++) appendCgpaSem(i);
+  cgpaUID=0;
+  for(let i=0;i<4;i++) appendCgpaSem();
 }
-function appendCgpaSem(n){
+function appendCgpaSem(){
+  cgpaUID++;
+  const uid=cgpaUID;
   const d=document.createElement('div');
-  d.className='sem-card';d.id='cgpa-sem-'+n;
+  d.className='sem-card';d.dataset.uid=uid;
   d.innerHTML=`
     <div class="sem-card-head">
-      <h3>Semester ${n}</h3>
-      ${n>4?`<button class="del-btn" onclick="delCgpaSem(${n})" type="button" title="Remove">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>`:''}
-    </div>
-    <div class="field">
-      <label>SGPA</label>
-      <input class="inp" id="cgpa-sgpa-${n}" type="number" step="0.01" min="0" max="10" placeholder="0.00 – 10.00"/>
-      <span class="err-msg" id="cgpa-sgpa-${n}-err"></span>
-    </div>`;
-  document.getElementById('cgpa-sems').appendChild(d);
-}
-function addCgpaSem(){
-  cgpaSems++;
-  const d=document.createElement('div');
-  d.className='sem-card';d.id='cgpa-sem-'+cgpaSems;
-  d.innerHTML=`
-    <div class="sem-card-head">
-      <h3>Semester ${cgpaSems}</h3>
-      <button class="del-btn" onclick="delCgpaSem(${cgpaSems})" type="button" title="Remove">
+      <h3 class="sem-label"></h3>
+      <button class="del-btn" onclick="delCgpaSem(${uid})" type="button" title="Remove">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="field">
       <label>SGPA</label>
-      <input class="inp" id="cgpa-sgpa-${cgpaSems}" type="number" step="0.01" min="0" max="10" placeholder="0.00 – 10.00"/>
-      <span class="err-msg" id="cgpa-sgpa-${cgpaSems}-err"></span>
+      <input class="inp" id="cgpa-sgpa-${uid}" type="number" step="0.01" min="0" max="10" placeholder="0.00 – 10.00"/>
+      <span class="err-msg" id="cgpa-sgpa-${uid}-err"></span>
     </div>`;
   document.getElementById('cgpa-sems').appendChild(d);
+  relabelCgpa();
 }
-function delCgpaSem(n){document.getElementById('cgpa-sem-'+n).remove()}
+function relabelCgpa(){
+  document.querySelectorAll('#cgpa-sems .sem-card').forEach((c,i)=>{
+    c.querySelector('.sem-label').textContent='Semester '+(i+1);
+  });
+}
+function addCgpaSem(){
+  const count=document.querySelectorAll('#cgpa-sems .sem-card').length;
+  if(count>=8){showBanner('cgpa-err','Maximum 8 semesters allowed');return;}
+  showBanner('cgpa-err','');
+  appendCgpaSem();
+}
+function delCgpaSem(uid){
+  const count=document.querySelectorAll('#cgpa-sems .sem-card').length;
+  if(count<=1){showBanner('cgpa-err','Need at least 1 semester');return;}
+  document.querySelector('#cgpa-sems .sem-card[data-uid="'+uid+'"]').remove();
+  relabelCgpa();
+  showBanner('cgpa-err','');
+}
 function calcCgpa(){
   showBanner('cgpa-err','');
   const inputs=document.querySelectorAll('#cgpa-sems .inp');
@@ -986,52 +995,55 @@ function calcCgpa(){
 }
 
 // ── CREDIT-BASED CGPA ─────────────────────────────
-let cbSems=4;
+let cbUID=0;
 function initCb(){
   document.getElementById('cb-sems').innerHTML='';
-  cbSems=4;
-  for(let i=1;i<=4;i++) appendCbSem(i);
+  cbUID=0;
+  for(let i=0;i<4;i++) appendCbSem();
 }
-function appendCbSem(n){
+function appendCbSem(){
+  cbUID++;
+  const uid=cbUID;
   const d=document.createElement('div');
-  d.className='sem-card';d.id='cb-sem-'+n;
+  d.className='sem-card';d.dataset.uid=uid;
   d.innerHTML=`
     <div class="sem-card-head">
-      <h3>Semester ${n}</h3>
-      ${n>4?`<button class="del-btn" onclick="delCbSem(${n})" type="button" title="Remove">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>`:''}
-    </div>
-    <div class="grid2">
-      <div class="field"><label>SGPA</label><input class="inp" id="cb-sgpa-${n}" type="number" step="0.01" min="0" max="10" placeholder="0 – 10"/><span class="err-msg" id="cb-sgpa-${n}-err"></span></div>
-      <div class="field"><label>Credits</label><input class="inp" id="cb-cr-${n}" type="number" step="1" min="1" max="100" placeholder="e.g. 22"/><span class="err-msg" id="cb-cr-${n}-err"></span></div>
-    </div>`;
-  document.getElementById('cb-sems').appendChild(d);
-}
-function addCbSem(){
-  cbSems++;
-  const d=document.createElement('div');
-  d.className='sem-card';d.id='cb-sem-'+cbSems;
-  d.innerHTML=`
-    <div class="sem-card-head">
-      <h3>Semester ${cbSems}</h3>
-      <button class="del-btn" onclick="delCbSem(${cbSems})" type="button" title="Remove">
+      <h3 class="sem-label"></h3>
+      <button class="del-btn" onclick="delCbSem(${uid})" type="button" title="Remove">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="grid2">
-      <div class="field"><label>SGPA</label><input class="inp" id="cb-sgpa-${cbSems}" type="number" step="0.01" min="0" max="10" placeholder="0 – 10"/><span class="err-msg" id="cb-sgpa-${cbSems}-err"></span></div>
-      <div class="field"><label>Credits</label><input class="inp" id="cb-cr-${cbSems}" type="number" step="1" min="1" max="100" placeholder="e.g. 22"/><span class="err-msg" id="cb-cr-${cbSems}-err"></span></div>
+      <div class="field"><label>SGPA</label><input class="inp" id="cb-sgpa-${uid}" type="number" step="0.01" min="0" max="10" placeholder="0 – 10"/><span class="err-msg" id="cb-sgpa-${uid}-err"></span></div>
+      <div class="field"><label>Credits</label><input class="inp" id="cb-cr-${uid}" type="number" step="1" min="1" max="100" placeholder="e.g. 22"/><span class="err-msg" id="cb-cr-${uid}-err"></span></div>
     </div>`;
   document.getElementById('cb-sems').appendChild(d);
+  relabelCb();
 }
-function delCbSem(n){document.getElementById('cb-sem-'+n).remove()}
+function relabelCb(){
+  document.querySelectorAll('#cb-sems .sem-card').forEach((c,i)=>{
+    c.querySelector('.sem-label').textContent='Semester '+(i+1);
+  });
+}
+function addCbSem(){
+  const count=document.querySelectorAll('#cb-sems .sem-card').length;
+  if(count>=8){showBanner('cb-err','Maximum 8 semesters allowed');return;}
+  showBanner('cb-err','');
+  appendCbSem();
+}
+function delCbSem(uid){
+  const count=document.querySelectorAll('#cb-sems .sem-card').length;
+  if(count<=1){showBanner('cb-err','Need at least 1 semester');return;}
+  document.querySelector('#cb-sems .sem-card[data-uid="'+uid+'"]').remove();
+  relabelCb();
+  showBanner('cb-err','');
+}
 function calcCb(){
   showBanner('cb-err','');
   const cards=document.querySelectorAll('#cb-sems .sem-card');
   let wsum=0,crsum=0,cnt=0,hasErr=false;
-  cards.forEach(c=>{
-    const id=c.id.replace('cb-sem-','');
+ cards.forEach(c=>{
+    const id=c.dataset.uid;
     const sgEl=document.getElementById('cb-sgpa-'+id);
     const crEl=document.getElementById('cb-cr-'+id);
     const sgErrEl=document.getElementById('cb-sgpa-'+id+'-err');
@@ -1054,52 +1066,55 @@ function calcCb(){
 }
 
 // ── PERCENTAGE ────────────────────────────────────
-let pctSems=4;
+let pctUID=0;
 function initPct(){
   document.getElementById('pct-sems').innerHTML='';
-  pctSems=4;
-  for(let i=1;i<=4;i++) appendPctSem(i);
+  pctUID=0;
+  for(let i=0;i<4;i++) appendPctSem();
 }
-function appendPctSem(n){
+function appendPctSem(){
+  pctUID++;
+  const uid=pctUID;
   const d=document.createElement('div');
-  d.className='sem-card';d.id='pct-sem-'+n;
+  d.className='sem-card';d.dataset.uid=uid;
   d.innerHTML=`
     <div class="sem-card-head">
-      <h3>Semester ${n}</h3>
-      ${n>4?`<button class="del-btn" onclick="delPctSem(${n})" type="button" title="Remove">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>`:''}
-    </div>
-    <div class="grid2">
-      <div class="field"><label>Marks Scored</label><input class="inp" id="pct-scored-${n}" type="number" min="0" placeholder="e.g. 450"/><span class="err-msg" id="pct-scored-${n}-err"></span></div>
-      <div class="field"><label>Total Marks</label><input class="inp" id="pct-total-${n}" type="number" min="1" placeholder="e.g. 600"/><span class="err-msg" id="pct-total-${n}-err"></span></div>
-    </div>`;
-  document.getElementById('pct-sems').appendChild(d);
-}
-function addPctSem(){
-  pctSems++;
-  const d=document.createElement('div');
-  d.className='sem-card';d.id='pct-sem-'+pctSems;
-  d.innerHTML=`
-    <div class="sem-card-head">
-      <h3>Semester ${pctSems}</h3>
-      <button class="del-btn" onclick="delPctSem(${pctSems})" type="button" title="Remove">
+      <h3 class="sem-label"></h3>
+      <button class="del-btn" onclick="delPctSem(${uid})" type="button" title="Remove">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="grid2">
-      <div class="field"><label>Marks Scored</label><input class="inp" id="pct-scored-${pctSems}" type="number" min="0" placeholder="e.g. 450"/><span class="err-msg" id="pct-scored-${pctSems}-err"></span></div>
-      <div class="field"><label>Total Marks</label><input class="inp" id="pct-total-${pctSems}" type="number" min="1" placeholder="e.g. 600"/><span class="err-msg" id="pct-total-${pctSems}-err"></span></div>
+      <div class="field"><label>Marks Scored</label><input class="inp" id="pct-scored-${uid}" type="number" min="0" placeholder="e.g. 450"/><span class="err-msg" id="pct-scored-${uid}-err"></span></div>
+      <div class="field"><label>Total Marks</label><input class="inp" id="pct-total-${uid}" type="number" min="1" placeholder="e.g. 600"/><span class="err-msg" id="pct-total-${uid}-err"></span></div>
     </div>`;
   document.getElementById('pct-sems').appendChild(d);
+  relabelPct();
 }
-function delPctSem(n){document.getElementById('pct-sem-'+n).remove()}
+function relabelPct(){
+  document.querySelectorAll('#pct-sems .sem-card').forEach((c,i)=>{
+    c.querySelector('.sem-label').textContent='Semester '+(i+1);
+  });
+}
+function addPctSem(){
+  const count=document.querySelectorAll('#pct-sems .sem-card').length;
+  if(count>=8){showBanner('pct-err','Maximum 8 semesters allowed');return;}
+  showBanner('pct-err','');
+  appendPctSem();
+}
+function delPctSem(uid){
+  const count=document.querySelectorAll('#pct-sems .sem-card').length;
+  if(count<=1){showBanner('pct-err','Need at least 1 semester');return;}
+  document.querySelector('#pct-sems .sem-card[data-uid="'+uid+'"]').remove();
+  relabelPct();
+  showBanner('pct-err','');
+}
 function calcPct(){
   showBanner('pct-err','');
   const cards=document.querySelectorAll('#pct-sems .sem-card');
   let sc=0,tot=0,cnt=0,hasErr=false;
-  cards.forEach(c=>{
-    const id=c.id.replace('pct-sem-','');
+ cards.forEach(c=>{
+    const id=c.dataset.uid;
     const scEl=document.getElementById('pct-scored-'+id);
     const ttEl=document.getElementById('pct-total-'+id);
     const scErrEl=document.getElementById('pct-scored-'+id+'-err');
