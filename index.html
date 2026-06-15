@@ -538,13 +538,13 @@ percentage calculation and semester performance tracking.
     <div class="container">
       <div class="sec-label">Resources</div>
       <div class="res-grid">
-        <a href="https://drive.google.com" target="_blank" class="res-card">
+        <a href="#" onclick="comingSoon('Notes'); return false;" class="res-card">
           <div class="res-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div><div class="res-name">Notes</div></div>
         </a>
-        <a href="https://drive.google.com" target="_blank" class="res-card">
+        <a href="#" onclick="comingSoon('PYQs'); return false;" class="res-card">
           <div class="res-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           </div>
@@ -797,7 +797,38 @@ function closeMob(){burger.classList.remove('open');mob.classList.remove('open')
 document.addEventListener('click',e=>{
   if(mob.classList.contains('open')&&!mob.contains(e.target)&&!burger.contains(e.target)) closeMob();
 });
+function comingSoon(feature){
+  const msg = document.createElement('div');
 
+  msg.innerHTML = `
+    <div style="
+      position:fixed;
+top:120px;
+left:50%;
+transform:translateX(-50%);
+max-width:320px;
+width:calc(100% - 40px);
+text-align:center;
+      background:#1C3D2B;
+      color:#EAF3DE;
+      padding:14px 18px;
+      border-radius:12px;
+      font-family:Inter,sans-serif;
+      font-size:14px;
+      font-weight:500;
+      z-index:9999;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);
+    ">
+      🚧 ${feature} coming soon
+    </div>
+  `;
+
+  document.body.appendChild(msg);
+
+  setTimeout(()=>{
+    msg.remove();
+  },2500);
+}
 // ── HELPERS ───────────────────────────────────────
 function step(id,d){
   const el=document.getElementById(id);
